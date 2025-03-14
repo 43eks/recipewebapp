@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -36,11 +38,12 @@ public class 勤怠管理コンソールGUI extends JFrame {
         nameField = new JTextField();
         JLabel timeLabel = new JLabel("時間:");
         timeField = new JTextField();
+        timeField.setEditable(false); // 時刻フィールドは編集不可
         inputPanel.add(nameLabel);
         inputPanel.add(nameField);
         inputPanel.add(timeLabel);
         inputPanel.add(timeField);
-        
+
         // ボタン設定
         clockInButton = new JButton("出勤");
         clockOutButton = new JButton("退勤");
@@ -64,7 +67,8 @@ public class 勤怠管理コンソールGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = nameField.getText();
-                String time = timeField.getText();
+                String time = getCurrentTime();
+                timeField.setText(time); // 現在時刻を表示
                 logArea.append("出勤: " + name + " - " + time + "\n");
             }
         });
@@ -73,10 +77,18 @@ public class 勤怠管理コンソールGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = nameField.getText();
-                String time = timeField.getText();
+                String time = getCurrentTime();
+                timeField.setText(time); // 現在時刻を表示
                 logArea.append("退勤: " + name + " - " + time + "\n");
             }
         });
+    }
+
+    // 現在の時刻を取得するメソッド
+    private String getCurrentTime() {
+        LocalTime currentTime = LocalTime.now(); // 現在時刻を取得
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // フォーマット
+        return currentTime.format(formatter); // フォーマットした時刻を返す
     }
 
     public static void main(String[] args) {
