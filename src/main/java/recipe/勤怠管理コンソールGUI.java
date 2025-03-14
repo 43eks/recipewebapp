@@ -4,12 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -29,7 +29,8 @@ public class 勤怠管理コンソールGUI extends JFrame {
     private JTextArea logArea;
     private JButton clockInButton;
     private JButton clockOutButton;
-    private final String historyFilePath = "attendance_history.txt"; // 履歴ファイルパス
+
+    private static final String DB_URL = "jdbc:sqlite:attendance.db"; // SQLiteデータベースのパス
 
     public 勤怠管理コンソールGUI() {
         // フレームの設定
@@ -69,6 +70,8 @@ public class 勤怠管理コンソールGUI extends JFrame {
         add(buttonPanel, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
 
+        // データベース初期化
+        initializeDatabase();
         // 履歴を読み込んで表示
         loadAttendanceHistory();
 
@@ -103,27 +106,52 @@ public class 勤怠管理コンソールGUI extends JFrame {
         return currentTime.format(formatter); // フォーマットした時刻を返す
     }
 
-    // 勤怠記録をファイルに保存するメソッド
-    private void saveAttendanceRecord(String name, String time, String status) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFilePath, true))) {
-            writer.write(status + ": " + name + " - " + time + "\n");
-        } catch (IOException e) {
+    // データベース初期化メソッド
+    private void initializeDatabase() {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS attendance (" +
+                                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                    "name TEXT NOT NULL, " +
+                                    "time TEXT NOT NULL, " +
+                                    "status TEXT NOT NULL)";
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(createTableSQL); // テーブル作成
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // 勤怠履歴をファイルから読み込むメソッド
-    private void loadAttendanceHistory() {
-        File file = new File(historyFilePath);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    logArea.append(line + "\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    // 勤怠記録をデータベースに保存するメソッド
+    private void saveAttendanceRecord(String name, String time, String status) {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            String insertSQL = "INSERT INTO attendance (name, time, status) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+                pstmt.setString(1, name);
+                pstmt.setString(2, time);
+                pstmt.setString(3, status);
+                pstmt.executeUpdate(); // データ挿入
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 勤怠履歴をデータベースから読み込むメソッド
+    private void loadAttendanceHistory() {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            String selectSQL = "SELECT * FROM attendance ORDER BY id DESC";
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(selectSQL)) {
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    String time = rs.getString("time");
+                    String status = rs.getString("status");
+                    logArea.append(status + ": " + name + " - " + time + "\n");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
