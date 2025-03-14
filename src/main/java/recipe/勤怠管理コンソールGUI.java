@@ -4,6 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -23,6 +29,7 @@ public class 勤怠管理コンソールGUI extends JFrame {
     private JTextArea logArea;
     private JButton clockInButton;
     private JButton clockOutButton;
+    private final String historyFilePath = "attendance_history.txt"; // 履歴ファイルパス
 
     public 勤怠管理コンソールGUI() {
         // フレームの設定
@@ -62,6 +69,9 @@ public class 勤怠管理コンソールGUI extends JFrame {
         add(buttonPanel, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
 
+        // 履歴を読み込んで表示
+        loadAttendanceHistory();
+
         // ボタンのアクションリスナー
         clockInButton.addActionListener(new ActionListener() {
             @Override
@@ -70,6 +80,7 @@ public class 勤怠管理コンソールGUI extends JFrame {
                 String time = getCurrentTime();
                 timeField.setText(time); // 現在時刻を表示
                 logArea.append("出勤: " + name + " - " + time + "\n");
+                saveAttendanceRecord(name, time, "出勤");
             }
         });
 
@@ -80,6 +91,7 @@ public class 勤怠管理コンソールGUI extends JFrame {
                 String time = getCurrentTime();
                 timeField.setText(time); // 現在時刻を表示
                 logArea.append("退勤: " + name + " - " + time + "\n");
+                saveAttendanceRecord(name, time, "退勤");
             }
         });
     }
@@ -89,6 +101,30 @@ public class 勤怠管理コンソールGUI extends JFrame {
         LocalTime currentTime = LocalTime.now(); // 現在時刻を取得
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // フォーマット
         return currentTime.format(formatter); // フォーマットした時刻を返す
+    }
+
+    // 勤怠記録をファイルに保存するメソッド
+    private void saveAttendanceRecord(String name, String time, String status) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFilePath, true))) {
+            writer.write(status + ": " + name + " - " + time + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 勤怠履歴をファイルから読み込むメソッド
+    private void loadAttendanceHistory() {
+        File file = new File(historyFilePath);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    logArea.append(line + "\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String[] args) {
