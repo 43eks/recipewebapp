@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -35,7 +36,7 @@ public class 勤怠管理コンソールGUI extends JFrame {
     public 勤怠管理コンソールGUI() {
         // フレームの設定
         setTitle("勤怠管理システム");
-        setSize(400, 300);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -75,28 +76,37 @@ public class 勤怠管理コンソールGUI extends JFrame {
         // 履歴を読み込んで表示
         loadAttendanceHistory();
 
-        // ボタンのアクションリスナー
+        // 出勤ボタンのアクションリスナー
         clockInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText();
-                String time = getCurrentTime();
-                timeField.setText(time); // 現在時刻を表示
-                logArea.append("出勤: " + name + " - " + time + "\n");
-                saveAttendanceRecord(name, time, "出勤");
+                recordAttendance("出勤");
             }
         });
 
+        // 退勤ボタンのアクションリスナー
         clockOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText();
-                String time = getCurrentTime();
-                timeField.setText(time); // 現在時刻を表示
-                logArea.append("退勤: " + name + " - " + time + "\n");
-                saveAttendanceRecord(name, time, "退勤");
+                recordAttendance("退勤");
             }
         });
+    }
+
+    // 勤怠を記録するメソッド（出勤・退勤共通）
+    private void recordAttendance(String status) {
+        String name = nameField.getText().trim();
+        if (name.isEmpty()) {
+            logArea.append("エラー: 名前を入力してください。\n");
+            return;
+        }
+
+        String date = LocalDate.now().toString(); // 今日の日付を取得
+        String time = getCurrentTime(); // 現在時刻を取得
+        timeField.setText(time); // 現在時刻を表示
+
+        logArea.append(status + ": " + name + " - " + date + " " + time + "\n");
+        saveAttendanceRecord(name, date, time, status);
     }
 
     // 現在の時刻を取得するメソッド
@@ -112,6 +122,7 @@ public class 勤怠管理コンソールGUI extends JFrame {
             String createTableSQL = "CREATE TABLE IF NOT EXISTS attendance (" +
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                     "name TEXT NOT NULL, " +
+                                    "date TEXT NOT NULL, " +
                                     "time TEXT NOT NULL, " +
                                     "status TEXT NOT NULL)";
             try (Statement stmt = conn.createStatement()) {
@@ -123,13 +134,14 @@ public class 勤怠管理コンソールGUI extends JFrame {
     }
 
     // 勤怠記録をデータベースに保存するメソッド
-    private void saveAttendanceRecord(String name, String time, String status) {
+    private void saveAttendanceRecord(String name, String date, String time, String status) {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            String insertSQL = "INSERT INTO attendance (name, time, status) VALUES (?, ?, ?)";
+            String insertSQL = "INSERT INTO attendance (name, date, time, status) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
                 pstmt.setString(1, name);
-                pstmt.setString(2, time);
-                pstmt.setString(3, status);
+                pstmt.setString(2, date);
+                pstmt.setString(3, time);
+                pstmt.setString(4, status);
                 pstmt.executeUpdate(); // データ挿入
             }
         } catch (SQLException e) {
@@ -145,9 +157,10 @@ public class 勤怠管理コンソールGUI extends JFrame {
                  ResultSet rs = stmt.executeQuery(selectSQL)) {
                 while (rs.next()) {
                     String name = rs.getString("name");
+                    String date = rs.getString("date");
                     String time = rs.getString("time");
                     String status = rs.getString("status");
-                    logArea.append(status + ": " + name + " - " + time + "\n");
+                    logArea.append(status + ": " + name + " - " + date + " " + time + "\n");
                 }
             }
         } catch (SQLException e) {
