@@ -2,12 +2,16 @@ package recipe;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class 勤怠管理コンソール {
-    private final Map<String, 勤怠管理コンソール> employeeRecords;
+
+    // 従業員情報を管理するMap
+    private final Map<String, 勤怠情報> employeeRecords;
     private static final Scanner scanner = new Scanner(System.in);
 
     public 勤怠管理コンソール() {
@@ -17,7 +21,7 @@ public class 勤怠管理コンソール {
     // 従業員を登録
     public void addEmployee(String employeeId) {
         if (!employeeRecords.containsKey(employeeId)) {
-            employeeRecords.put(employeeId, new 勤怠管理コンソール());
+            employeeRecords.put(employeeId, new 勤怠情報(employeeId));
             System.out.println("従業員 " + employeeId + " を登録しました。");
         } else {
             System.out.println("この従業員はすでに登録されています。");
@@ -36,8 +40,9 @@ public class 勤怠管理コンソール {
 
     // 出勤処理
     public void checkIn(String employeeId) {
-        if (employeeRecords.containsKey(employeeId)) {
-            employeeRecords.put(employeeId, new 勤怠管理コンソール());
+        勤怠情報 employee = employeeRecords.get(employeeId);
+        if (employee != null) {
+            employee.checkIn();
             System.out.println("従業員 " + employeeId + " が出勤しました。");
         } else {
             System.out.println("従業員が登録されていません。");
@@ -46,9 +51,9 @@ public class 勤怠管理コンソール {
 
     // 退勤処理
     public void checkOut(String employeeId) {
-        勤怠管理コンソール employee = employeeRecords.get(employeeId);
+        勤怠情報 employee = employeeRecords.get(employeeId);
         if (employee != null) {
-            employee.checkOut(employeeId);
+            employee.checkOut();
             System.out.println("従業員 " + employeeId + " が退勤しました。");
         } else {
             System.out.println("従業員が見つかりません。");
@@ -57,9 +62,10 @@ public class 勤怠管理コンソール {
 
     // 休憩開始
     public void startBreak(String employeeId) {
-        勤怠管理コンソール employee = employeeRecords.get(employeeId);
+        勤怠情報 employee = employeeRecords.get(employeeId);
         if (employee != null) {
-            employee.startBreak(employeeId);
+            employee.startBreak();
+            System.out.println("従業員 " + employeeId + " の休憩を開始しました。");
         } else {
             System.out.println("従業員が見つかりません。");
         }
@@ -67,9 +73,10 @@ public class 勤怠管理コンソール {
 
     // 休憩終了
     public void endBreak(String employeeId) {
-        勤怠管理コンソール employee = employeeRecords.get(employeeId);
+        勤怠情報 employee = employeeRecords.get(employeeId);
         if (employee != null) {
-            employee.endBreak(employeeId);
+            employee.endBreak();
+            System.out.println("従業員 " + employeeId + " の休憩が終了しました。");
         } else {
             System.out.println("従業員が見つかりません。");
         }
@@ -83,8 +90,8 @@ public class 勤怠管理コンソール {
         if (employeeRecords.isEmpty()) {
             System.out.println("現在、登録されている従業員はいません。");
         } else {
-            for (勤怠管理コンソール employee : employeeRecords.values()) {
-                employee.printAllWorkStatus();
+            for (勤怠情報 employee : employeeRecords.values()) {
+                employee.printWorkStatus();
             }
         }
     }
@@ -94,7 +101,7 @@ public class 勤怠管理コンソール {
         String fileName = "勤怠データ.csv";
         try (FileWriter writer = new FileWriter(fileName)) {
             writer.write("社員ID,出勤時間,退勤時間,総労働時間(分),休憩時間合計(分),実際の労働時間(分)\n");
-            for (勤怠管理コンソール employee : employeeRecords.values()) {
+            for (勤怠情報 employee : employeeRecords.values()) {
                 writer.write(employee.toCSV() + "\n");
             }
             System.out.println("CSVファイルを出力しました: " + fileName);
@@ -162,9 +169,63 @@ public class 勤怠管理コンソール {
         }
     }
 
-    // CSVデータフォーマット
-    public String toCSV() {
-        return String.format("%s,%s,%s,%d,%d,%d",
-            "社員ID", "出勤時間", "退勤時間", 0, 0, 0);  // 仮のデータ
+    // 勤怠情報を管理するクラス
+    static class 勤怠情報 {
+        private String employeeId;
+        private LocalDateTime checkInTime;
+        private LocalDateTime checkOutTime;
+        private LocalDateTime breakStartTime;
+        private LocalDateTime breakEndTime;
+        private long totalBreakTime = 0; // 休憩時間合計(分)
+        
+        public 勤怠情報(String employeeId) {
+            this.employeeId = employeeId;
+        }
+
+        // 出勤処理
+        public void checkIn() {
+            this.checkInTime = LocalDateTime.now();
+        }
+
+        // 退勤処理
+        public void checkOut() {
+            this.checkOutTime = LocalDateTime.now();
+        }
+
+        // 休憩開始
+        public void startBreak() {
+            this.breakStartTime = LocalDateTime.now();
+        }
+
+        // 休憩終了
+        public void endBreak() {
+            if (this.breakStartTime != null) {
+                this.breakEndTime = LocalDateTime.now();
+                this.totalBreakTime += Duration.between(breakStartTime, breakEndTime).toMinutes();
+            }
+        }
+
+        // 勤務状況の表示
+        public void printWorkStatus() {
+            System.out.println("社員ID: " + employeeId);
+            System.out.println("出勤時間: " + (checkInTime != null ? checkInTime : "未出勤"));
+            System.out.println("退勤時間: " + (checkOutTime != null ? checkOutTime : "未退勤"));
+            System.out.println("総労働時間: " + (checkInTime != null && checkOutTime != null ? Duration.between(checkInTime, checkOutTime).toMinutes() : 0) + " 分");
+            System.out.println("休憩時間合計: " + totalBreakTime + " 分");
+            System.out.println("実働時間: " + ((checkInTime != null && checkOutTime != null) ?
+                    (Duration.between(checkInTime, checkOutTime).toMinutes() - totalBreakTime) : 0) + " 分");
+        }
+
+        // CSV出力用のフォーマット
+        public String toCSV() {
+            return String.format("%s,%s,%s,%d,%d,%d",
+                    employeeId,
+                    checkInTime != null ? checkInTime : "未出勤",
+                    checkOutTime != null ? checkOutTime : "未退勤",
+                    checkInTime != null && checkOutTime != null ? Duration.between(checkInTime, checkOutTime).toMinutes() : 0,
+                    totalBreakTime,
+                    (checkInTime != null && checkOutTime != null) ?
+                            (Duration.between(checkInTime, checkOutTime).toMinutes() - totalBreakTime) : 0);
+        }
     }
 }
