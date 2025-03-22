@@ -2,6 +2,7 @@ package recipe;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ public class 勤怠管理コンソール {
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
     private List<BreakTime> breaks;
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public 勤怠管理コンソール(String employeeId) {
         this.employeeId = employeeId;
@@ -77,6 +80,37 @@ public class 勤怠管理コンソール {
         return getWorkDuration() - getTotalBreakTime();
     }
 
+    // 勤務状況の表示
+    public void printWorkStatus() {
+        System.out.println("\n=========================");
+        System.out.println("勤務状況");
+        System.out.println("=========================");
+        System.out.println("社員ID: " + employeeId);
+        System.out.println("出勤時間: " + checkInTime.format(FORMATTER));
+        if (checkOutTime != null) {
+            System.out.println("退勤時間: " + checkOutTime.format(FORMATTER));
+            System.out.println("総労働時間 (分): " + getWorkDuration());
+            System.out.println("休憩時間合計 (分): " + getTotalBreakTime());
+            System.out.println("実際の労働時間 (分): " + getActualWorkDuration());
+        } else {
+            System.out.println("退勤時間: まだ勤務中");
+        }
+
+        // 休憩リストの表示
+        if (!breaks.isEmpty()) {
+            System.out.println("\n休憩履歴:");
+            for (int i = 0; i < breaks.size(); i++) {
+                BreakTime b = breaks.get(i);
+                String breakStart = b.getStartTime().format(FORMATTER);
+                String breakEnd = (b.getEndTime() != null) ? b.getEndTime().format(FORMATTER) : "進行中";
+                System.out.println("  休憩 " + (i + 1) + ": " + breakStart + " 〜 " + breakEnd);
+            }
+        } else {
+            System.out.println("\n休憩履歴: なし");
+        }
+        System.out.println("=========================\n");
+    }
+
     // 休憩時間を管理するクラス
     private static class BreakTime {
         private final LocalDateTime startTime;
@@ -104,9 +138,15 @@ public class 勤怠管理コンソール {
         勤怠管理コンソール employee = new 勤怠管理コンソール("EMP001");
 
         // 休憩を試す
-        Thread.sleep(1000); // シミュレーションのための遅延
+        Thread.sleep(1000);
         employee.startBreak();
-        Thread.sleep(2000); // 休憩時間のシミュレーション
+        Thread.sleep(2000);
+        employee.endBreak();
+
+        // 2回目の休憩
+        Thread.sleep(1000);
+        employee.startBreak();
+        Thread.sleep(1500);
         employee.endBreak();
 
         // 退勤
@@ -114,11 +154,6 @@ public class 勤怠管理コンソール {
         employee.checkOut();
 
         // 勤務状況を表示
-        System.out.println("社員ID: " + employee.getEmployeeId());
-        System.out.println("出勤時間: " + employee.getCheckInTime());
-        System.out.println("退勤時間: " + employee.getCheckOutTime());
-        System.out.println("総労働時間 (分): " + employee.getWorkDuration());
-        System.out.println("休憩時間合計 (分): " + employee.getTotalBreakTime());
-        System.out.println("実際の労働時間 (分): " + employee.getActualWorkDuration());
+        employee.printWorkStatus();
     }
 }
