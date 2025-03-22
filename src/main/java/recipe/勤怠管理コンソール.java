@@ -1,5 +1,7 @@
 package recipe;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -87,6 +89,20 @@ public class 勤怠管理コンソール {
         }
     }
 
+    // CSV出力
+    public void exportToCSV() {
+        String fileName = "勤怠データ.csv";
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write("社員ID,出勤時間,退勤時間,総労働時間(分),休憩時間合計(分),実際の労働時間(分)\n");
+            for (勤怠管理コンソール employee : employeeRecords.values()) {
+                writer.write(employee.toCSV() + "\n");
+            }
+            System.out.println("CSVファイルを出力しました: " + fileName);
+        } catch (IOException e) {
+            System.out.println("CSV出力エラー: " + e.getMessage());
+        }
+    }
+
     // メインメソッド
     public static void main(String[] args) {
         勤怠管理コンソール system = new 勤怠管理コンソール();
@@ -99,7 +115,8 @@ public class 勤怠管理コンソール {
             System.out.println("5. 休憩開始");
             System.out.println("6. 休憩終了");
             System.out.println("7. 全従業員の勤務状況を表示");
-            System.out.println("8. 終了");
+            System.out.println("8. CSV出力");
+            System.out.println("9. 終了");
             System.out.print("選択してください: ");
 
             int choice = scanner.nextInt();
@@ -108,43 +125,46 @@ public class 勤怠管理コンソール {
             switch (choice) {
                 case 1:
                     System.out.print("従業員IDを入力してください: ");
-                    String addId = scanner.nextLine();
-                    system.addEmployee(addId);
+                    system.addEmployee(scanner.nextLine());
                     break;
                 case 2:
                     System.out.print("削除する従業員IDを入力してください: ");
-                    String removeId = scanner.nextLine();
-                    system.removeEmployee(removeId);
+                    system.removeEmployee(scanner.nextLine());
                     break;
                 case 3:
                     System.out.print("出勤する従業員IDを入力してください: ");
-                    String checkInId = scanner.nextLine();
-                    system.checkIn(checkInId);
+                    system.checkIn(scanner.nextLine());
                     break;
                 case 4:
                     System.out.print("退勤する従業員IDを入力してください: ");
-                    String checkOutId = scanner.nextLine();
-                    system.checkOut(checkOutId);
+                    system.checkOut(scanner.nextLine());
                     break;
                 case 5:
                     System.out.print("休憩を開始する従業員IDを入力してください: ");
-                    String startBreakId = scanner.nextLine();
-                    system.startBreak(startBreakId);
+                    system.startBreak(scanner.nextLine());
                     break;
                 case 6:
                     System.out.print("休憩を終了する従業員IDを入力してください: ");
-                    String endBreakId = scanner.nextLine();
-                    system.endBreak(endBreakId);
+                    system.endBreak(scanner.nextLine());
                     break;
                 case 7:
                     system.printAllWorkStatus();
                     break;
                 case 8:
+                    system.exportToCSV();
+                    break;
+                case 9:
                     System.out.println("システムを終了します。");
                     return;
                 default:
                     System.out.println("無効な選択です。もう一度入力してください。");
             }
         }
+    }
+
+    // CSVデータフォーマット
+    public String toCSV() {
+        return String.format("%s,%s,%s,%d,%d,%d",
+            "社員ID", "出勤時間", "退勤時間", 0, 0, 0);  // 仮のデータ
     }
 }
