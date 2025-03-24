@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -52,7 +53,8 @@ public class 顧客管理 {
             System.out.println("\n顧客管理システム");
             System.out.println("1. 顧客検索");
             System.out.println("2. 検索フィルター");
-            System.out.println("3. 終了");
+            System.out.println("3. 並び替え");
+            System.out.println("4. 終了");
             System.out.print("選択してください: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // 改行消費
@@ -65,6 +67,9 @@ public class 顧客管理 {
                     filterCustomer();
                     break;
                 case 3:
+                    sortCustomer();
+                    break;
+                case 4:
                     System.out.println("終了します。");
                     return;
                 default:
@@ -73,15 +78,15 @@ public class 顧客管理 {
         }
     }
 
-    // 🔍 1. 顧客を検索する
+    // 🔍 1. 顧客検索
     private static void searchCustomer() {
         System.out.print("検索キーワード（名前・メール・電話番号）: ");
         String keyword = scanner.nextLine().toLowerCase();
 
         List<Customer> result = new ArrayList<>();
         for (Customer c : customerList) {
-            if (c.getName().toLowerCase().contains(keyword) || 
-                c.getEmail().toLowerCase().contains(keyword) || 
+            if (c.getName().toLowerCase().contains(keyword) ||
+                c.getEmail().toLowerCase().contains(keyword) ||
                 c.getPhone().contains(keyword)) {
                 result.add(c);
             }
@@ -90,7 +95,7 @@ public class 顧客管理 {
         displayResults(result);
     }
 
-    // 🎯 2. フィルター検索（名前で始まる、特定のドメインのメール、特定のキャリアの電話）
+    // 🎯 2. 検索フィルター
     private static void filterCustomer() {
         System.out.println("フィルター条件を選択:");
         System.out.println("1. 指定した文字で始まる名前");
@@ -135,6 +140,37 @@ public class 顧客管理 {
         }
 
         displayResults(result);
+    }
+
+    // 📝 3. 並び替え機能
+    private static void sortCustomer() {
+        System.out.println("並び替えの基準を選択:");
+        System.out.println("1. 名前順（昇順）");
+        System.out.println("2. メールアドレス順（昇順）");
+        System.out.println("3. 電話番号順（昇順）");
+        System.out.print("選択してください: ");
+        int sortChoice = scanner.nextInt();
+        scanner.nextLine(); // 改行消費
+
+        switch (sortChoice) {
+            case 1:
+                customerList.sort(Comparator.comparing(Customer::getName));
+                System.out.println("🔹 名前順（昇順）で並び替えました。");
+                break;
+            case 2:
+                customerList.sort(Comparator.comparing(Customer::getEmail));
+                System.out.println("🔹 メールアドレス順（昇順）で並び替えました。");
+                break;
+            case 3:
+                customerList.sort(Comparator.comparing(Customer::getPhone));
+                System.out.println("🔹 電話番号順（昇順）で並び替えました。");
+                break;
+            default:
+                System.out.println("無効な選択です。");
+                return;
+        }
+
+        displayResults(customerList);
     }
 
     // 📌 検索結果を表示
