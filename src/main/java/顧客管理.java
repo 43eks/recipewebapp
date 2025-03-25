@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -54,7 +55,8 @@ public class 顧客管理 {
             System.out.println("2. 顧客表示");
             System.out.println("3. グループで顧客検索");
             System.out.println("4. 顧客編集");
-            System.out.println("5. 終了");
+            System.out.println("5. 顧客の並び替え");
+            System.out.println("6. 終了");
             System.out.print("選択してください: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // 改行の処理
@@ -73,6 +75,9 @@ public class 顧客管理 {
                     editCustomer(scanner);
                     break;
                 case 5:
+                    sortCustomers(scanner);
+                    break;
+                case 6:
                     System.out.println("終了します。");
                     scanner.close();
                     return;
@@ -157,5 +162,46 @@ public class 顧客管理 {
         }
 
         System.out.println("指定した顧客が見つかりませんでした。");
+    }
+
+    // 顧客の並び替え
+    private static void sortCustomers(Scanner scanner) {
+        if (customers.isEmpty()) {
+            System.out.println("顧客情報がありません。");
+            return;
+        }
+
+        System.out.println("1. 名前で並び替え（昇順）");
+        System.out.println("2. 名前で並び替え（降順）");
+        System.out.println("3. グループで並び替え（昇順）");
+        System.out.println("4. グループで並び替え（降順）");
+        System.out.print("選択してください: ");
+        int option = scanner.nextInt();
+        scanner.nextLine(); // 改行の処理
+
+        switch (option) {
+            case 1:
+                customers.sort(Comparator.comparing(Customer::getName));
+                System.out.println("名前の昇順で並び替えました。");
+                break;
+            case 2:
+                customers.sort(Comparator.comparing(Customer::getName).reversed());
+                System.out.println("名前の降順で並び替えました。");
+                break;
+            case 3:
+                customers.sort(Comparator.comparing(Customer::getGroup));
+                System.out.println("グループの昇順で並び替えました。");
+                break;
+            case 4:
+                customers.sort(Comparator.comparing(Customer::getGroup).reversed());
+                System.out.println("グループの降順で並び替えました。");
+                break;
+            default:
+                System.out.println("無効な選択です。");
+                return;
+        }
+
+        // 並び替え後の顧客リストを表示
+        displayCustomers();
     }
 }
