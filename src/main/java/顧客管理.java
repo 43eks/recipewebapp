@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -56,7 +57,8 @@ public class 顧客管理 {
             System.out.println("3. グループで顧客検索");
             System.out.println("4. 顧客編集");
             System.out.println("5. 顧客の並び替え");
-            System.out.println("6. 終了");
+            System.out.println("6. 顧客削除");
+            System.out.println("7. 終了");
             System.out.print("選択してください: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // 改行の処理
@@ -78,6 +80,9 @@ public class 顧客管理 {
                     sortCustomers(scanner);
                     break;
                 case 6:
+                    deleteCustomer(scanner);
+                    break;
+                case 7:
                     System.out.println("終了します。");
                     scanner.close();
                     return;
@@ -203,5 +208,23 @@ public class 顧客管理 {
 
         // 並び替え後の顧客リストを表示
         displayCustomers();
+    }
+
+    // 顧客の削除
+    private static void deleteCustomer(Scanner scanner) {
+        System.out.print("削除する顧客名を入力してください: ");
+        String name = scanner.nextLine();
+
+        Iterator<Customer> iterator = customers.iterator();
+        while (iterator.hasNext()) {
+            Customer customer = iterator.next();
+            if (customer.getName().equalsIgnoreCase(name)) {
+                iterator.remove();
+                System.out.println("顧客が削除されました。");
+                return;
+            }
+        }
+
+        System.out.println("指定した顧客が見つかりませんでした。");
     }
 }
