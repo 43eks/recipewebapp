@@ -12,7 +12,7 @@ public class 今日は何の日アプリ {
             conn.setRequestMethod("GET");
 
             // User-Agent を設定
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            conn.setRequestProperty("User-Agent", "Java/11");
 
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
