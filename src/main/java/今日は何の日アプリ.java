@@ -6,7 +6,7 @@ import java.net.URL;
 public class 今日は何の日アプリ {
     public static void main(String[] args) {
         try {
-            String urlString = "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/events/2025/03/25";
+            String urlString = "https://api.whatistoday.cyou/v3/anniv/";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
