@@ -6,7 +6,7 @@ import java.net.URL;
 public class 今日は何の日アプリ {
     public static void main(String[] args) {
         try {
-            String urlString = "https://api.whatistoday.cyou/v3/anniv/";
+            String urlString = "https://api.whatistoday.cyou/v2/anniv/";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
