@@ -55,6 +55,7 @@ public class 数字当てゲーム {
             int targetNumber = random.nextInt(maxRange) + 1;
             int guess = 0;
             int attempts = 0;
+            int hintCount = 0;  // ヒントの回数カウンタ
 
             // 時間制限を設定
             long startTime = System.currentTimeMillis();
@@ -63,6 +64,16 @@ public class 数字当てゲーム {
 
             // ゲーム本体
             while (guess != targetNumber && attempts < maxAttempts) {
+                if (hintCount < 3 && attempts >= 2) {
+                    // 2回目以降の試行時にヒントを提供
+                    System.out.print("ヒントを使いますか？(yes/no): ");
+                    String hintResponse = scanner.next();
+                    if (hintResponse.equalsIgnoreCase("yes")) {
+                        giveHint(targetNumber, maxRange);
+                        hintCount++;
+                    }
+                }
+
                 System.out.print("予想する数字を入力してください (1〜" + maxRange + "): ");
                 guess = scanner.nextInt();
                 attempts++;
@@ -106,6 +117,18 @@ public class 数字当てゲーム {
         displayLeaderboard();
         scanner.close();
         System.out.println("ゲームを終了します。ありがとうございました！");
+    }
+
+    // ヒント機能
+    public static void giveHint(int targetNumber, int maxRange) {
+        Random random = new Random();
+        int hintType = random.nextInt(2);  // ヒントタイプのランダム選択 (0 = 数字の範囲, 1 = 奇数/偶数)
+
+        if (hintType == 0) {
+            System.out.println("ヒント: 数字は " + (targetNumber <= maxRange / 2 ? "1〜" + maxRange / 2 : (maxRange / 2 + 1) + "〜" + maxRange) + " の範囲にあります。");
+        } else {
+            System.out.println("ヒント: 数字は " + (targetNumber % 2 == 0 ? "偶数" : "奇数") + " です。");
+        }
     }
 
     // ランキングを表示するメソッド
