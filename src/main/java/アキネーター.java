@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Scanner;
 
 public class アキネーター {
@@ -23,6 +22,13 @@ public class アキネーター {
         add武将("黒田官兵衛", Arrays.asList("軍師", "豊臣"), "黒田官兵衛は豊臣秀吉の軍師として活躍し、後に福岡藩の基礎を築いた。", "黒田家の家督を継ぎ、後に福岡藩主となった。", "福岡城");
         add武将("真田昌幸", Arrays.asList("軍師"), "真田昌幸は知略に優れ、上田城の戦いで徳川軍を二度も撃退した。", "真田家の当主。真田家はその知恵と勇気で知られる。", "上田城");
         add武将("毛利元就", Arrays.asList("中国地方"), "毛利元就は『三本の矢』の教えで知られ、毛利家を大勢力に成長させた。", "毛利家の家族で、三本の矢の教えが家族を団結させた。", "吉田郡山城");
+        add武将("織田信長", Arrays.asList("尾張", "天下布武"), "織田信長は戦国時代の革命児で、全国統一を目指した。", "織田家の当主で、斬新な戦術を多用した。", "安土城");
+        add武将("長宗我部元親", Arrays.asList("四国"), "長宗我部元親は四国を統一した戦国武将。", "長宗我部家の当主。", "岡豊城");
+        add武将("島津義久", Arrays.asList("九州"), "島津義久は九州の雄で、戦国時代を生き抜いた。", "島津家の当主。", "鹿児島城");
+        add武将("天草四郎", Arrays.asList("江戸初期", "キリシタン"), "天草四郎は島原の乱を指導したカリスマ的存在。", "江戸時代初期の宗教的指導者。", "原城");
+        add武将("最上義光", Arrays.asList("東北"), "最上義光は東北の戦国大名で、外交戦略に長けていた。", "最上家の当主。", "山形城");
+        add武将("武田信玄", Arrays.asList("甲斐", "風林火山"), "武田信玄は戦国最強の騎馬軍団を率いた。", "武田家の当主。", "躑躅ヶ崎館");
+        add武将("北条氏政", Arrays.asList("関東"), "北条氏政は小田原城を拠点に関東を支配した。", "北条家の当主。", "小田原城");
 
         // 戦国豆知識リスト
         戦国豆知識.add("戦国時代の鉄砲伝来は1543年、種子島にポルトガル人が漂着したことがきっかけ！");
@@ -47,68 +53,18 @@ public class アキネーター {
         scanner.close();
     }
 
-    private static void playGame(Scanner scanner) {
-        System.out.println("あなたが考えている武将を当てます！");
-        for (Map.Entry<String, List<String>> entry : 武将データ.entrySet()) {
-            String name = entry.getKey();
-            List<String> traits = entry.getValue();
-            boolean match = true;
-            for (String trait : traits) {
-                if (!askQuestion(scanner, trait + "に関連がありますか？")) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) {
-                System.out.println("あなたが考えているのは『" + name + "』ですね！");
-                System.out.println("【豆知識】" + 武将豆知識.get(name));
-                System.out.println("【家系情報】" + 武将家系情報.get(name));
-                System.out.println("【お城】" + 武将お城情報.get(name));  // お城情報の表示
-                displayRandomTrivia();
-                return;
-            }
-        }
-        System.out.println("該当する武将が見つかりませんでした。");
-    }
+	private static void add武将FromUser(Scanner scanner) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 
-    private static void add武将FromUser(Scanner scanner) {
-        System.out.print("追加する武将の名前を入力してください: ");
-        String name = scanner.nextLine();
-        List<String> traits = new ArrayList<>();
-        System.out.println("武将の特徴を入力してください (終了するには 'done' を入力) ");
-        while (true) {
-            System.out.print("特徴: ");
-            String trait = scanner.nextLine();
-            if (trait.equalsIgnoreCase("done")) break;
-            traits.add(trait);
-        }
-        System.out.print("この武将の豆知識を入力してください: ");
-        String trivia = scanner.nextLine();
-        System.out.print("この武将の家系情報を入力してください: ");
-        String familyInfo = scanner.nextLine();
-        System.out.print("この武将が城主だったお城の名前を入力してください: ");
-        String castleName = scanner.nextLine();
-        add武将(name, traits, trivia, familyInfo, castleName);
-        System.out.println(name + "を追加しました！");
-    }
+	private static void playGame(Scanner scanner) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 
-    private static void add武将(String name, List<String> traits, String trivia, String familyInfo, String castleName) {
-        武将データ.put(name, traits);
-        武将豆知識.put(name, trivia);
-        武将家系情報.put(name, familyInfo);
-        武将お城情報.put(name, castleName);  // お城情報の追加
-    }
-
-    private static boolean askQuestion(Scanner scanner, String question) {
-        System.out.print(question + " (y/n): ");
-        String answer = scanner.next().trim().toLowerCase();
-        scanner.nextLine(); // バッファクリア
-        return answer.equals("y");
-    }
-
-    private static void displayRandomTrivia() {
-        Random random = new Random();
-        int index = random.nextInt(戦国豆知識.size());
-        System.out.println("【戦国豆知識】" + 戦国豆知識.get(index));
-    }
+	private static void add武将(String string, List<String> asList, String string2, String string3, String string4) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 }
