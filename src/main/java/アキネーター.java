@@ -3,22 +3,30 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 
 public class アキネーター {
-    private static Map<String, List<String>>武将データ = new HashMap<>();
+    private static Map<String, List<String>> 武将データ = new HashMap<>();
+    private static Map<String, String> 武将豆知識 = new HashMap<>();
+    private static List<String> 戦国豆知識 = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("戦国武将アキネーターを開始します！\n質問に y (はい) / n (いいえ) で答えてください。");
 
         // 初期データ
-        add武将("伊達政宗", Arrays.asList("東北", "隻眼"));
-        add武将("片倉小十郎", Arrays.asList("東北"));
-        add武将("黒田官兵衛", Arrays.asList("軍師", "豊臣"));
-        add武将("真田昌幸", Arrays.asList("軍師"));
-        add武将("毛利元就", Arrays.asList("中国地方"));
+        add武将("伊達政宗", Arrays.asList("東北", "隻眼"), "伊達政宗は独眼竜の異名を持つカリスマ武将だった！");
+        add武将("片倉小十郎", Arrays.asList("東北"), "片倉小十郎は伊達政宗の忠実な家臣であり、優れた戦略家だった。");
+        add武将("黒田官兵衛", Arrays.asList("軍師", "豊臣"), "黒田官兵衛は豊臣秀吉の軍師として活躍し、後に福岡藩の基礎を築いた。");
+        add武将("真田昌幸", Arrays.asList("軍師"), "真田昌幸は知略に優れ、上田城の戦いで徳川軍を二度も撃退した。");
+        add武将("毛利元就", Arrays.asList("中国地方"), "毛利元就は『三本の矢』の教えで知られ、毛利家を大勢力に成長させた。");
 
+        // 戦国豆知識リスト
+        戦国豆知識.add("戦国時代の鉄砲伝来は1543年、種子島にポルトガル人が漂着したことがきっかけ！");
+        戦国豆知識.add("戦国武将の兜には、敵を威圧するために派手な装飾が施されていた！");
+        戦国豆知識.add("関ヶ原の戦いはわずか半日で決着がついたが、日本の歴史を大きく変えた。");
+        
         while (true) {
             System.out.println("1. アキネーターをプレイ\n2. 武将を追加\n3. 終了");
             System.out.print("選択してください: ");
@@ -51,6 +59,8 @@ public class アキネーター {
             }
             if (match) {
                 System.out.println("あなたが考えているのは『" + name + "』ですね！");
+                System.out.println("【豆知識】" + 武将豆知識.get(name));
+                displayRandomTrivia();
                 return;
             }
         }
@@ -68,12 +78,15 @@ public class アキネーター {
             if (trait.equalsIgnoreCase("done")) break;
             traits.add(trait);
         }
-        add武将(name, traits);
+        System.out.print("この武将の豆知識を入力してください: ");
+        String trivia = scanner.nextLine();
+        add武将(name, traits, trivia);
         System.out.println(name + "を追加しました！");
     }
 
-    private static void add武将(String name, List<String> traits) {
+    private static void add武将(String name, List<String> traits, String trivia) {
         武将データ.put(name, traits);
+        武将豆知識.put(name, trivia);
     }
 
     private static boolean askQuestion(Scanner scanner, String question) {
@@ -81,5 +94,11 @@ public class アキネーター {
         String answer = scanner.next().trim().toLowerCase();
         scanner.nextLine(); // バッファクリア
         return answer.equals("y");
+    }
+
+    private static void displayRandomTrivia() {
+        Random random = new Random();
+        int index = random.nextInt(戦国豆知識.size());
+        System.out.println("【戦国豆知識】" + 戦国豆知識.get(index));
     }
 }
