@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 class Node {
@@ -50,4 +49,3 @@ public class アキネーター {
         scanner.close();
     }
 }
-
