@@ -7,12 +7,25 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class アキネーター {
-    private static Map<String, List<String>> 武将データ = new HashMap<>();
-    private static Map<String, String> 武将豆知識 = new HashMap<>();
-    private static Map<String, String> 武将家系情報 = new HashMap<>();
-    private static Map<String, String> 武将お城情報 = new HashMap<>();
-    private static Map<String, String> 武将性格 = new HashMap<>();
-    private static Map<String, String> 武将名言 = new HashMap<>();
+    private static class 武将情報 {
+        List<String> 特徴;
+        String 豆知識;
+        String 家系情報;
+        String お城;
+        String 性格;
+        String 名言;
+
+        武将情報(List<String> 特徴, String 豆知識, String 家系情報, String お城, String 性格, String 名言) {
+            this.特徴 = 特徴;
+            this.豆知識 = 豆知識;
+            this.家系情報 = 家系情報;
+            this.お城 = お城;
+            this.性格 = 性格;
+            this.名言 = 名言;
+        }
+    }
+
+    private static Map<String, 武将情報> 武将データ = new HashMap<>();
     private static List<String> 戦国豆知識 = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -20,13 +33,16 @@ public class アキネーター {
         System.out.println("戦国武将アキネーターを開始します！\n質問に y (はい) / n (いいえ) で答えてください。");
 
         // 初期データ
-        add武将("伊達政宗", Arrays.asList("東北", "隻眼"), "伊達政宗は独眼竜の異名を持つカリスマ武将だった！", "伊達家の当主。政宗は伊達家を一族としてまとめ上げた。", "仙台城", "カリスマ性があり、野心家", "戦国の世に生まれたからには、大志を抱かねばならぬ！");
-        add武将("片倉小十郎", Arrays.asList("東北"), "片倉小十郎は伊達政宗の忠実な家臣であり、優れた戦略家だった。", "片倉家の家臣で、伊達家の忠実なしもべ。", "仙台城", "忠義心が強く、冷静沈着", "主君を守ることこそ、我が使命なり！");
-        add武将("黒田官兵衛", Arrays.asList("軍師", "豊臣"), "黒田官兵衛は豊臣秀吉の軍師として活躍し、後に福岡藩の基礎を築いた。", "黒田家の家督を継ぎ、後に福岡藩主となった。", "福岡城", "知略に優れた策略家", "勝つためには、策を尽くさねばならぬ。");
+        add武将("伊達政宗", Arrays.asList("東北", "隻眼", "独立心が強い", "槍を好む"),
+                "伊達政宗は独眼竜の異名を持つカリスマ武将だった！", "伊達家の当主。政宗は伊達家を一族としてまとめ上げた。",
+                "仙台城", "カリスマ性があり、野心家", "戦国の世に生まれたからには、大志を抱かねばならぬ！");
 
-        // 戦国豆知識リスト
+        add武将("黒田官兵衛", Arrays.asList("軍師", "豊臣", "冷静沈着", "戦略家"),
+                "黒田官兵衛は豊臣秀吉の軍師として活躍し、後に福岡藩の基礎を築いた。",
+                "黒田家の家督を継ぎ、後に福岡藩主となった。", "福岡城", "知略に優れた策略家", "勝つためには、策を尽くさねばならぬ。");
+
+        // 戦国豆知識
         戦国豆知識.add("戦国時代の鉄砲伝来は1543年、種子島にポルトガル人が漂着したことがきっかけ！");
-        戦国豆知識.add("戦国武将の兜には、敵を威圧するために派手な装飾が施されていた！");
         戦国豆知識.add("関ヶ原の戦いはわずか半日で決着がついたが、日本の歴史を大きく変えた。");
 
         while (true) {
@@ -49,23 +65,26 @@ public class アキネーター {
 
     private static void playGame(Scanner scanner) {
         System.out.println("あなたが考えている武将を当てます！");
-        for (Map.Entry<String, List<String>> entry : 武将データ.entrySet()) {
+
+        for (Map.Entry<String, 武将情報> entry : 武将データ.entrySet()) {
             String name = entry.getKey();
-            List<String> traits = entry.getValue();
+            武将情報 info = entry.getValue();
             boolean match = true;
-            for (String trait : traits) {
+
+            for (String trait : info.特徴) {
                 if (!askQuestion(scanner, trait + "に関連がありますか？")) {
                     match = false;
                     break;
                 }
             }
+
             if (match) {
                 System.out.println("あなたが考えているのは『" + name + "』ですね！");
-                System.out.println("【豆知識】" + 武将豆知識.get(name));
-                System.out.println("【家系情報】" + 武将家系情報.get(name));
-                System.out.println("【お城】" + 武将お城情報.get(name));
-                System.out.println("【性格】" + 武将性格.get(name));
-                System.out.println("【名言】\"" + 武将名言.get(name) + "\"");
+                System.out.println("【豆知識】" + info.豆知識);
+                System.out.println("【家系情報】" + info.家系情報);
+                System.out.println("【お城】" + info.お城);
+                System.out.println("【性格】" + info.性格);
+                System.out.println("【名言】\"" + info.名言 + "\"");
                 displayRandomTrivia();
                 return;
             }
@@ -112,11 +131,6 @@ public class アキネーター {
     }
 
     private static void add武将(String name, List<String> traits, String trivia, String familyInfo, String castleName, String personality, String quote) {
-        武将データ.put(name, traits);
-        武将豆知識.put(name, trivia);
-        武将家系情報.put(name, familyInfo);
-        武将お城情報.put(name, castleName);
-        武将性格.put(name, personality);
-        武将名言.put(name, quote);
+        武将データ.put(name, new 武将情報(traits, trivia, familyInfo, castleName, personality, quote));
     }
 }
