@@ -26,7 +26,7 @@ public class アキネーター {
         add武将("斎藤道三", Arrays.asList("美濃", "戦国大名"), "美濃のマムシと呼ばれた戦国大名。", "斎藤家の当主。", "稲葉山城", "狡猾で策略家", "天下は力で奪い取るものなり！");
         add武将("山中鹿之介", Arrays.asList("忠義", "尼子家"), "尼子家を支えた忠義の士。", "山中家の家臣。", "月山富田城", "忠誠心が強い", "願わくば、我に七難八苦を与えたまえ！");
         add武将("真田昌幸", Arrays.asList("知略", "真田家"), "真田家を支えた戦国の知将。", "真田家の当主。", "上田城", "冷静沈着", "戦とは知恵を尽くすものよ。");
-        
+
         // 新規追加の7名
         add武将("豊臣秀吉", Arrays.asList("天下人", "豊臣"), "農民から天下人へと成り上がった伝説の武将。", "豊臣家の創始者。", "大阪城", "人たらしで大胆", "鳴かぬなら鳴かせてみせようホトトギス。");
         add武将("徳川家康", Arrays.asList("江戸", "忍耐"), "忍耐強く江戸幕府を開いた知略家。", "徳川家の当主。", "江戸城", "慎重かつ冷静", "鳴かぬなら鳴くまで待とうホトトギス。");
@@ -53,21 +53,76 @@ public class アキネーター {
         scanner.close();
     }
 
-	private static void add武将FromUser(Scanner scanner) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+    private static void playGame(Scanner scanner) {
+        System.out.println("あなたが考えている武将を当てます！");
+        for (Map.Entry<String, List<String>> entry : 武将データ.entrySet()) {
+            String name = entry.getKey();
+            List<String> traits = entry.getValue();
+            boolean match = true;
+            for (String trait : traits) {
+                if (!askQuestion(scanner, trait + "に関連がありますか？")) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                System.out.println("あなたが考えているのは『" + name + "』ですね！");
+                System.out.println("【豆知識】" + 武将豆知識.get(name));
+                System.out.println("【家系情報】" + 武将家系情報.get(name));
+                System.out.println("【お城】" + 武将お城情報.get(name));
+                System.out.println("【性格】" + 武将性格.get(name));
+                System.out.println("【名言】\"" + 武将名言.get(name) + "\"");
+                displayRandomTrivia();
+                return;
+            }
+        }
+        System.out.println("該当する武将が見つかりませんでした。");
+    }
 
-	private static void playGame(Scanner scanner) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+    private static void add武将FromUser(Scanner scanner) {
+        System.out.print("追加する武将の名前を入力してください: ");
+        String name = scanner.nextLine();
+        List<String> traits = new ArrayList<>();
+        System.out.println("武将の特徴を入力してください (終了するには 'done' を入力) ");
+        while (true) {
+            System.out.print("特徴: ");
+            String trait = scanner.nextLine();
+            if (trait.equalsIgnoreCase("done")) break;
+            traits.add(trait);
+        }
+        System.out.print("この武将の豆知識を入力してください: ");
+        String trivia = scanner.nextLine();
+        System.out.print("この武将の家系情報を入力してください: ");
+        String familyInfo = scanner.nextLine();
+        System.out.print("この武将が城主だったお城の名前を入力してください: ");
+        String castleName = scanner.nextLine();
+        System.out.print("この武将の性格を入力してください: ");
+        String personality = scanner.nextLine();
+        System.out.print("この武将の名言を入力してください: ");
+        String quote = scanner.nextLine();
+        add武将(name, traits, trivia, familyInfo, castleName, personality, quote);
+        System.out.println(name + "を追加しました！");
+    }
 
-	private static void add武将(String string, List<String> asList, String string2, String string3, String string4,
-			String string5, String string6) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+    private static void add武将(String name, List<String> traits, String trivia, String familyInfo, String castleName, String personality, String quote) {
+        武将データ.put(name, traits);
+        武将豆知識.put(name, trivia);
+        武将家系情報.put(name, familyInfo);
+        武将お城情報.put(name, castleName);
+        武将性格.put(name, personality);
+        武将名言.put(name, quote);
+    }
 
-    // 省略: playGame, add武将FromUser, add武将 などのメソッド
+    private static void displayRandomTrivia() {
+        if (!戦国豆知識.isEmpty()) {
+            int randomIndex = (int) (Math.random() * 戦国豆知識.size());
+            System.out.println("【戦国豆知識】" + 戦国豆知識.get(randomIndex));
+        }
+    }
+
+    private static boolean askQuestion(Scanner scanner, String question) {
+        System.out.print(question + " (y/n): ");
+        String answer = scanner.nextLine();
+        return answer.equalsIgnoreCase("y");
+    }
 }
