@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 
 public class アキネーター {
@@ -72,17 +73,20 @@ public class アキネーター {
         System.out.println("該当する武将が見つかりませんでした。");
     }
 
+    private static boolean askQuestion(Scanner scanner, String question) {
+        System.out.print(question + " (y/n): ");
+        String answer = scanner.next().trim().toLowerCase();
+        scanner.nextLine(); // バッファクリア
+        return answer.equals("y");
+    }
+
     private static void displayRandomTrivia() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+        Random random = new Random();
+        int index = random.nextInt(戦国豆知識.size());
+        System.out.println("【戦国豆知識】" + 戦国豆知識.get(index));
+    }
 
-	private static boolean askQuestion(Scanner scanner, String string) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
-
-	private static void add武将FromUser(Scanner scanner) {
+    private static void add武将FromUser(Scanner scanner) {
         System.out.print("追加する武将の名前を入力してください: ");
         String name = scanner.nextLine();
         List<String> traits = new ArrayList<>();
