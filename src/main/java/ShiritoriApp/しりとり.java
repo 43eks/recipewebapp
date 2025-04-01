@@ -1,39 +1,34 @@
 package ShiritoriApp;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
 public class しりとり {
-    private static Set<String> usedWords = new HashSet<>();
-    private static List<String> easyWords = Arrays.asList("りんご", "ごま", "まくら", "らっこ", "こま");
-    private static List<String> normalWords = Arrays.asList("りんご", "ごま", "まくら", "らっこ", "こま", "まんじゅう", "うなぎ", "ぎんこう");
-    private static List<String> hardWords = Arrays.asList("ゲシュタルト崩壊", "アメリカ", "ラッパ", "パラダイス", "ディスカバリー", "イノベーション");
-    private static List<String> availableWords;
 
+    private static Set<String> usedWords = new HashSet<>();
+    private static Map<String, List<String>> difficultyWords = new HashMap<>();
     private static int playerScore = 0;
     private static int computerScore = 0;
+    private static String difficulty = "普通";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("難易度を選んでください (1: かんたん, 2: ふつう, 3: むずかしい): ");
-        int difficulty = scanner.nextInt();
-        scanner.nextLine(); // 改行を消費
+        initializeWordLists();
 
-        switch (difficulty) {
-            case 1:
-                availableWords = easyWords;
-                break;
-            case 3:
-                availableWords = hardWords;
-                break;
-            default:
-                availableWords = normalWords;
+        System.out.println("難易度を選んでください（簡単 / 普通 / 難しい / おに）：");
+        difficulty = scanner.nextLine().trim();
+        if (!difficultyWords.containsKey(difficulty)) {
+            difficulty = "普通";
         }
 
-        System.out.println("しりとりを始めます。最初の単語を入力してください:");
+        System.out.println("しりとりを始めます。");
+        System.out.println("最初の単語を入力してください:");
+
         String lastWord = scanner.nextLine().trim();
         usedWords.add(lastWord);
 
@@ -41,19 +36,20 @@ public class しりとり {
             System.out.println("「" + lastWord.charAt(lastWord.length() - 1) + "」で始まる単語を入力してください:");
             String playerInput = scanner.nextLine().trim();
 
-            if (playerInput.isEmpty() || usedWords.contains(playerInput) || playerInput.charAt(0) != lastWord.charAt(lastWord.length() - 1)) {
-                System.out.println("無効な単語です。");
+            if (playerInput.isEmpty() || usedWords.contains(playerInput) ||
+                playerInput.charAt(0) != lastWord.charAt(lastWord.length() - 1)) {
+                System.out.println("不正な単語です。もう一度入力してください。");
                 continue;
             }
-            
+
+            usedWords.add(playerInput);
+            lastWord = playerInput;
+            playerScore++;
+
             if (playerInput.endsWith("ん")) {
                 System.out.println("「ん」で終わったのでゲーム終了！");
                 break;
             }
-            
-            usedWords.add(playerInput);
-            lastWord = playerInput;
-            playerScore++;
 
             System.out.println("コンピュータのターン...");
             String computerWord = getComputerWord(lastWord.charAt(lastWord.length() - 1));
@@ -78,8 +74,15 @@ public class しりとり {
         System.out.println("コンピュータのスコア: " + computerScore);
     }
 
+    private static void initializeWordLists() {
+        difficultyWords.put("簡単", Arrays.asList("りんご", "ごま", "まくら", "らっこ", "こま"));
+        difficultyWords.put("普通", Arrays.asList("まんじゅう", "うなぎ", "ぎんこう", "こうえん", "えび"));
+        difficultyWords.put("難しい", Arrays.asList("しんぶん", "ぶんぼうぐ", "ぐんま", "まっすぐ", "くつした"));
+        difficultyWords.put("おに", Arrays.asList("ゲシュタルト崩壊", "アメリカンドリーム", "パラダイムシフト", "ニューロンネットワーク"));
+    }
+
     private static String getComputerWord(char lastChar) {
-        for (String word : availableWords) {
+        for (String word : difficultyWords.get(difficulty)) {
             if (!usedWords.contains(word) && word.charAt(0) == lastChar) {
                 return word;
             }
