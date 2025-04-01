@@ -12,26 +12,26 @@ public class しりとり {
     private static Set<String> usedWords = new HashSet<>();
     
     // 各難易度ごとの単語リスト
+    private static List<String> veryEasyWords = Arrays.asList(
+            "りんご", "ごま", "まんじゅう", "うさぎ", "ぎんこう", "こうえん", "えび", "びん", "たきび", "まめ"
+    );
+    
     private static List<String> easyWords = Arrays.asList(
             "りんご", "ごま", "まくら", "らっこ", "こま", "まんじゅう", "うなぎ", "ぎんこう", "こうえん", "えび",
-            "びん", "たきび", "まめ", "めん", "んま", "まほう", "うさぎ", "ぎょうざ", "ざる", "るび",
-            "びょうき", "きりん", "んま", "まん", "んか", "かばん", "んし", "しお", "おにぎり", "りんご",
-            "ごま", "まくら", "らん", "んか", "かたな", "なべ", "べんとう", "うし", "しろ", "ろうか"
+            "びん", "たきび", "まめ", "めん", "んま", "まほう", "うさぎ", "ぎょうざ", "ざる", "るび"
     );
 
     private static List<String> mediumWords = Arrays.asList(
             "しんぶん", "まつ", "つき", "きた", "たけやま", "まつ", "つる", "るい", "いぬ", "ぬけ",
             "ゲシュタルト崩壊", "アメリカ", "ラッパ", "パラダイス", "さくらんぼ", "ぼたん", "たぬき", "きのこ",
-            "こま", "まっすぐ", "ぐんま", "まつ", "つき", "きた", "たけやま", "まつ", "つる", "るい",
-            "いぬ", "ぬけ", "ゲシュタルト崩壊", "アメリカ", "ラッパ", "パラダイス", "さくらんぼ", "ぼたん"
+            "こま", "まっすぐ", "ぐんま", "まつ", "つき", "きた", "たけやま", "まつ", "つる", "るい"
     );
     
     private static List<String> hardWords = Arrays.asList(
             "いざよい", "よだれ", "れいむ", "むし", "しらたま", "まお", "おろち", "ちょう", "うま", "ます",
             "すいか", "からす", "すいせん", "んとう", "うんこ", "ことり", "りんご", "ごま", "まんじゅう",
             "うなぎ", "ぎんこう", "こうえん", "えび", "びん", "たきび", "まめ", "めん", "んま", "まほう",
-            "うさぎ", "ぎょうざ", "ざる", "るび", "びょうき", "きりん", "んま", "まん", "んか", "かばん",
-            "んし", "しお", "おにぎり", "りんご", "ごま", "まくら", "らん", "んか", "かたな", "なべ"
+            "うさぎ", "ぎょうざ", "ざる", "るび", "びょうき", "きりん", "んま", "まん", "んか", "かばん"
     );
 
     private static List<String> oniWords = Arrays.asList(
@@ -48,7 +48,7 @@ public class しりとり {
     private static int computerScore = 0;
 
     // 難易度設定
-    private static String difficulty = "easy"; // デフォルトは「easy」
+    private static String difficulty = "veryEasy"; // デフォルトは「veryEasy」
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -56,7 +56,7 @@ public class しりとり {
         String playerInput = "";
 
         // 難易度を選択
-        System.out.println("難易度を選んでください: easy, medium, hard, oni");
+        System.out.println("難易度を選んでください: veryEasy, easy, medium, hard, oni");
         difficulty = scanner.nextLine().trim();
 
         // 最初の単語を取得
@@ -148,6 +148,9 @@ public class しりとり {
         
         // 難易度に応じた単語リストを選択
         switch (difficulty) {
+            case "easy":
+                selectedWords = easyWords;
+                break;
             case "medium":
                 selectedWords = mediumWords;
                 break;
@@ -157,17 +160,20 @@ public class しりとり {
             case "oni":
                 selectedWords = oniWords;
                 break;
-            case "easy":
+            case "veryEasy":
             default:
-                selectedWords = easyWords;
+                selectedWords = veryEasyWords;
+                break;
         }
 
-        // 最後の文字で始まる単語を検索
+        // 単語リストの中から使われていない単語を探す
         for (String word : selectedWords) {
             if (!usedWords.contains(word) && word.charAt(0) == lastChar) {
                 return word;
             }
         }
-        return null; // コンピュータが使える単語がない場合
+
+        // 使用できる単語がない場合はnullを返す
+        return null;
     }
 }
