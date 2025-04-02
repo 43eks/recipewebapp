@@ -58,8 +58,8 @@ public class Javaフレームワークアプリ {
             System.out.println("フレームワークは登録されていません。");
         } else {
             System.out.println("登録されているフレームワーク:");
-            for (Framework fw : frameworks) {
-                System.out.println(fw);
+            for (int i = 0; i < frameworks.size(); i++) {
+                System.out.println((i + 1) + ". " + frameworks.get(i).getName());
             }
         }
     }
@@ -81,22 +81,14 @@ public class Javaフレームワークアプリ {
 
     // フレームワーク削除
     private static void removeFramework(Scanner scanner) {
-        System.out.print("削除したいフレームワーク名を入力: ");
-        String name = scanner.nextLine();
+        System.out.print("削除したいフレームワークの番号を入力: ");
+        int index = scanner.nextInt() - 1;  // ユーザー入力は1から始まるので、インデックスは0から
 
-        Framework toRemove = null;
-        for (Framework fw : frameworks) {
-            if (fw.getName().equalsIgnoreCase(name)) {
-                toRemove = fw;
-                break;
-            }
-        }
-
-        if (toRemove != null) {
-            frameworks.remove(toRemove);
-            System.out.println(name + " フレームワークを削除しました。");
+        if (index >= 0 && index < frameworks.size()) {
+            frameworks.remove(index);
+            System.out.println("フレームワークを削除しました。");
         } else {
-            System.out.println(name + " は登録されていないフレームワークです。");
+            System.out.println("無効な番号です。");
         }
     }
 
@@ -120,20 +112,14 @@ public class Javaフレームワークアプリ {
 
     // 実装方法表示
     private static void showImplementationMethods(Scanner scanner) {
-        System.out.print("実装方法を知りたいフレームワーク名を入力: ");
-        String name = scanner.nextLine();
+        System.out.print("実装方法を知りたいフレームワークの番号を入力: ");
+        int index = scanner.nextInt() - 1;  // ユーザー入力は1から始まるので、インデックスは0から
 
-        boolean found = false;
-        for (Framework fw : frameworks) {
-            if (fw.getName().equalsIgnoreCase(name)) {
-                System.out.println("実装方法: " + fw.getImplementation());
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("指定されたフレームワークは見つかりませんでした。");
+        if (index >= 0 && index < frameworks.size()) {
+            Framework fw = frameworks.get(index);
+            System.out.println("実装方法: " + fw.getImplementation());
+        } else {
+            System.out.println("無効な番号です。");
         }
     }
 
