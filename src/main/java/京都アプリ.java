@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class 京都アプリ {
     private static Map<String, List<String>> sightseeingSpots = new HashMap<>();
@@ -20,7 +22,8 @@ public class 京都アプリ {
             System.out.println("2. グルメスポット一覧");
             System.out.println("3. お気に入り一覧");
             System.out.println("4. お気に入りに追加");
-            System.out.println("5. 終了");
+            System.out.println("5. おすすめを表示");
+            System.out.println("6. 終了");
             System.out.print("選択してください: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // 改行を消費
@@ -39,6 +42,9 @@ public class 京都アプリ {
                     addFavorite(scanner);
                     break;
                 case 5:
+                    displayRecommendations();
+                    break;
+                case 6:
                     System.out.println("アプリを終了します。");
                     return;
                 default:
@@ -102,5 +108,45 @@ public class 京都アプリ {
             if (spots.contains(spot)) return true;
         }
         return false;
+    }
+
+    // おすすめの観光名所・グルメスポットを表示
+    private static void displayRecommendations() {
+        System.out.println("\n=== おすすめスポット ===");
+
+        if (favoriteList.isEmpty()) {
+            System.out.println("お気に入りが登録されていません。まずはお気に入りに追加してみましょう。");
+            return;
+        }
+
+        Set<String> recommended = new HashSet<>();
+
+        // お気に入りにあるスポットと同じエリアの別のスポットをおすすめする
+        for (String area : sightseeingSpots.keySet()) {
+            List<String> sightseeing = sightseeingSpots.get(area);
+            List<String> gourmet = gourmetSpots.get(area);
+
+            for (String favorite : favoriteList) {
+                if (sightseeing.contains(favorite)) {
+                    recommended.addAll(sightseeing);
+                    recommended.addAll(gourmet);
+                }
+                if (gourmet.contains(favorite)) {
+                    recommended.addAll(sightseeing);
+                    recommended.addAll(gourmet);
+                }
+            }
+        }
+
+        // すでにお気に入りに登録されているものは除外
+        recommended.removeAll(favoriteList);
+
+        if (recommended.isEmpty()) {
+            System.out.println("新しいおすすめスポットはありません。");
+        } else {
+            for (String spot : recommended) {
+                System.out.println(" - " + spot);
+            }
+        }
     }
 }
