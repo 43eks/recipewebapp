@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Scanner;
 public class 京都アプリ {
     private static Map<String, List<String>> sightseeingSpots = new HashMap<>();
     private static Map<String, List<String>> gourmetSpots = new HashMap<>();
+    private static List<String> favoriteList = new ArrayList<>();
 
     public static void main(String[] args) {
         initializeData();
@@ -16,7 +18,9 @@ public class 京都アプリ {
             System.out.println("\n=== 京都アプリ ===");
             System.out.println("1. 観光名所一覧");
             System.out.println("2. グルメスポット一覧");
-            System.out.println("3. 終了");
+            System.out.println("3. お気に入り一覧");
+            System.out.println("4. お気に入りに追加");
+            System.out.println("5. 終了");
             System.out.print("選択してください: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // 改行を消費
@@ -29,6 +33,12 @@ public class 京都アプリ {
                     displayList("グルメスポット", gourmetSpots);
                     break;
                 case 3:
+                    displayFavorites();
+                    break;
+                case 4:
+                    addFavorite(scanner);
+                    break;
+                case 5:
                     System.out.println("アプリを終了します。");
                     return;
                 default:
@@ -42,22 +52,10 @@ public class 京都アプリ {
         sightseeingSpots.put("東山", Arrays.asList("清水寺", "八坂神社", "高台寺"));
         sightseeingSpots.put("嵐山", Arrays.asList("渡月橋", "竹林の道", "天龍寺"));
         sightseeingSpots.put("伏見", Arrays.asList("伏見稲荷大社", "寺田屋", "月桂冠大倉記念館"));
-        sightseeingSpots.put("天橋立", Arrays.asList("天橋立ビューランド", "元伊勢籠神社", "傘松公園"));
-        sightseeingSpots.put("南丹", Arrays.asList("美山かやぶきの里", "るり渓温泉", "日吉ダム"));
-        sightseeingSpots.put("向日市", Arrays.asList("向日神社", "長岡宮跡", "竹の径"));
-        sightseeingSpots.put("長岡京", Arrays.asList("長岡天満宮", "乙訓寺", "光明寺"));
-        sightseeingSpots.put("大山崎", Arrays.asList("アサヒビール大山崎山荘美術館", "離宮八幡宮", "天王山"));
-        sightseeingSpots.put("亀岡", Arrays.asList("亀岡城跡", "保津峡", "出雲大神宮"));
 
         gourmetSpots.put("東山", Arrays.asList("湯豆腐の名店", "抹茶スイーツカフェ", "京懐石料理"));
         gourmetSpots.put("嵐山", Arrays.asList("嵐山うどん", "桜餅の老舗", "鯛茶漬け"));
         gourmetSpots.put("伏見", Arrays.asList("酒蔵巡りの居酒屋", "京風おでん", "甘酒専門店"));
-        gourmetSpots.put("天橋立", Arrays.asList("海鮮丼の名店", "黒ちくわ", "天橋立ワイン"));
-        gourmetSpots.put("南丹", Arrays.asList("ジビエ料理", "美山牛乳ソフトクリーム", "地元産そば"));
-        gourmetSpots.put("向日市", Arrays.asList("たけのこ料理", "向日市ラーメン", "手作り和菓子店"));
-        gourmetSpots.put("長岡京", Arrays.asList("筍料理の専門店", "京風うなぎ", "長岡京カフェ"));
-        gourmetSpots.put("大山崎", Arrays.asList("地ビールレストラン", "天王山の湯豆腐", "和風スイーツ"));
-        gourmetSpots.put("亀岡", Arrays.asList("ぼたん鍋", "丹波黒豆スイーツ", "保津川ラフティングカフェ"));
     }
 
     // 一覧表示
@@ -69,5 +67,40 @@ public class 京都アプリ {
                 System.out.println(" - " + spot);
             }
         }
+    }
+
+    // お気に入り一覧表示
+    private static void displayFavorites() {
+        System.out.println("\n=== お気に入り一覧 ===");
+        if (favoriteList.isEmpty()) {
+            System.out.println("お気に入りはまだ登録されていません。");
+        } else {
+            for (String favorite : favoriteList) {
+                System.out.println(" - " + favorite);
+            }
+        }
+    }
+
+    // お気に入りに追加
+    private static void addFavorite(Scanner scanner) {
+        System.out.println("\n追加したいスポットを入力してください:");
+        String spot = scanner.nextLine();
+        if (isSpotExists(spot)) {
+            favoriteList.add(spot);
+            System.out.println(spot + " をお気に入りに追加しました。");
+        } else {
+            System.out.println("スポットが見つかりません。正しく入力してください。");
+        }
+    }
+
+    // スポットが存在するかチェック
+    private static boolean isSpotExists(String spot) {
+        for (List<String> spots : sightseeingSpots.values()) {
+            if (spots.contains(spot)) return true;
+        }
+        for (List<String> spots : gourmetSpots.values()) {
+            if (spots.contains(spot)) return true;
+        }
+        return false;
     }
 }
