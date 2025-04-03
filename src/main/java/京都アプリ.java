@@ -45,6 +45,9 @@ public class 京都アプリ {
         sightseeingSpots.put("天橋立", Arrays.asList("天橋立ビューランド", "元伊勢籠神社", "傘松公園"));
         sightseeingSpots.put("南丹", Arrays.asList("美山かやぶきの里", "るり渓温泉", "日吉ダム"));
         sightseeingSpots.put("向日市", Arrays.asList("向日神社", "長岡宮跡", "竹の径"));
+        sightseeingSpots.put("長岡京", Arrays.asList("長岡天満宮", "乙訓寺", "光明寺"));
+        sightseeingSpots.put("大山崎", Arrays.asList("アサヒビール大山崎山荘美術館", "離宮八幡宮", "天王山"));
+        sightseeingSpots.put("亀岡", Arrays.asList("亀岡城跡", "保津峡", "出雲大神宮"));
 
         gourmetSpots.put("東山", Arrays.asList("湯豆腐の名店", "抹茶スイーツカフェ", "京懐石料理"));
         gourmetSpots.put("嵐山", Arrays.asList("嵐山うどん", "桜餅の老舗", "鯛茶漬け"));
@@ -52,6 +55,9 @@ public class 京都アプリ {
         gourmetSpots.put("天橋立", Arrays.asList("海鮮丼の名店", "黒ちくわ", "天橋立ワイン"));
         gourmetSpots.put("南丹", Arrays.asList("ジビエ料理", "美山牛乳ソフトクリーム", "地元産そば"));
         gourmetSpots.put("向日市", Arrays.asList("たけのこ料理", "向日市ラーメン", "手作り和菓子店"));
+        gourmetSpots.put("長岡京", Arrays.asList("筍料理の専門店", "京風うなぎ", "長岡京カフェ"));
+        gourmetSpots.put("大山崎", Arrays.asList("地ビールレストラン", "天王山の湯豆腐", "和風スイーツ"));
+        gourmetSpots.put("亀岡", Arrays.asList("ぼたん鍋", "丹波黒豆スイーツ", "保津川ラフティングカフェ"));
     }
 
     // 一覧表示
