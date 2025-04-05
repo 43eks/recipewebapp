@@ -12,6 +12,8 @@ public class 北海道アプリ {
     private static Map<String, String> sightseeingDetails = new HashMap<>();
 
     public static void main(String[] args) {
+        printJavaInfo(); // ← Javaバージョン表示
+
         initializeData();
         Scanner scanner = new Scanner(System.in);
 
@@ -42,6 +44,14 @@ public class 北海道アプリ {
                     System.out.println("無効な選択です。もう一度入力してください。");
             }
         }
+    }
+
+    private static void printJavaInfo() {
+        System.out.println("==== Java実行環境情報 ====");
+        System.out.println("Javaバージョン: " + System.getProperty("java.version"));
+        System.out.println("Javaベンダー: " + System.getProperty("java.vendor"));
+        System.out.println("Javaホーム: " + System.getProperty("java.home"));
+        System.out.println("==========================");
     }
 
     private static void initializeData() {
